@@ -20,6 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
+
+#include <yaml.h>
 
 static int planned = 0;
 static unsigned int current_test = 0;
@@ -71,6 +74,111 @@ void tap_done_testing(void)
 	planned = 1;
 }
 
+// We write our own handler, so we can print the initial indent of 2 spaces.
+int tap_yaml_write_handler(void *data, unsigned char *buffer, size_t size)
+{
+	unsigned char *bptr = buffer;
+	size_t i = 0;
+
+	// Avoid compilation warning about unused variable
+	if (data) {}
+
+	while (*bptr != '\0' && i < size) {
+		if (*bptr == '\n') {
+			fputc('\n', stdout);
+			if (*(bptr+1) != '\0') {
+				fputs("  ", stdout);
+			}
+		} else {
+			fputc(*bptr, stdout);
+		}
+		bptr++;
+		i++;
+	}
+
+	return 1;
+}
+
+void tap_yaml_node_set_block_style(yaml_node_t *node, yaml_document_t *document)
+{
+	yaml_node_item_t *item_iter;
+	yaml_node_pair_t *pair_iter;
+
+	switch (node->type) {
+		case YAML_SEQUENCE_NODE:
+			node->data.sequence.style = YAML_BLOCK_SEQUENCE_STYLE;
+
+			item_iter = node->data.sequence.items.start;
+			while (item_iter < node->data.sequence.items.top) {
+				yaml_node_t *n = &(document->nodes.start[(*item_iter) - 1]);
+				tap_yaml_node_set_block_style(n, document);
+				item_iter++;
+			}
+			break;
+
+		case YAML_MAPPING_NODE:
+			node->data.mapping.style = YAML_BLOCK_MAPPING_STYLE;
+
+			pair_iter = node->data.mapping.pairs.start;
+			while (pair_iter < node->data.mapping.pairs.top) {
+				yaml_node_t *n = &(document->nodes.start[pair_iter->value - 1]);
+				tap_yaml_node_set_block_style(n, document);
+				pair_iter++;
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
+void tap_yaml_document_set_block_style(yaml_document_t *document)
+{
+	yaml_node_t *node;
+
+	node = yaml_document_get_root_node(document);
+	tap_yaml_node_set_block_style(node, document);
+}
+
+void tap_yaml_write(const char *yaml, va_list vl)
+{
+	yaml_parser_t parser;
+	yaml_document_t document;
+	yaml_emitter_t emitter;
+	char buffer[8192];
+	size_t length;
+
+	length = vsnprintf(buffer, 8192, yaml, vl);
+
+	yaml_parser_initialize(&parser);
+	yaml_parser_set_input_string(&parser, (unsigned char*) buffer, length);
+	if (yaml_parser_load(&parser, &document)) {
+		document.start_implicit = 0;
+		document.end_implicit = 0;
+
+		tap_yaml_document_set_block_style(&document);
+
+		yaml_emitter_initialize(&emitter);
+		yaml_emitter_set_output(&emitter, tap_yaml_write_handler, NULL);
+		yaml_emitter_set_indent(&emitter, 2);
+
+		// Initial indent
+		fputs("  ", stdout);
+
+		yaml_emitter_open(&emitter);
+		yaml_emitter_dump(&emitter, &document);
+		yaml_emitter_close(&emitter);
+
+		yaml_parser_delete(&parser);
+		yaml_emitter_delete(&emitter);
+		yaml_document_delete(&document);
+	} else {
+		fprintf(stderr, "Error: %s %s at offset %lu\n",
+			parser.problem, parser.context,
+			parser.problem_mark.index);
+	}
+}
+
 void tap_ok(int ok, const char *description, const char *yaml, ...)
 {
 	current_test += 1;
@@ -90,11 +198,10 @@ void tap_ok(int ok, const char *description, const char *yaml, ...)
 	printf("\n");
 
 	if (!ok && yaml != NULL) {
-		// TODO implement YAML feature
-		printf("  ---\n");
-		printf("  - 'YAML feature not implemented yet'\n");
-		printf("  - 'raw yaml: %s'\n", yaml);
-		printf("  ...\n");
+		va_list vl;
+		va_start(vl, yaml);
+		tap_yaml_write(yaml, vl);
+		va_end(vl);
 	}
 }
 

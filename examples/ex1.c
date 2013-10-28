@@ -2,11 +2,11 @@
 
 int main()
 {
-	plan(18);
+	plan(19);
 
 	ok(0);
 	ok(0, "should fail");
-	ok(0, "should fail too", "[]");
+	ok(0, "should fail too", "{ reason: 'test is 0', data: [1, 2, 3] }");
 	ok(1);
 	ok(1, "should succeed");
 	ok(1, "should succeed", "[]");
@@ -26,13 +26,18 @@ int main()
 	pass("Pass");
 	fail("Fail");
 
-	is(1, 1, "1 == 1");
-	is(1, 2, "1 == 2");
+	int got = 1, expected = 1;
+
+	is(got, expected, "1 == 1", "{ got: %d, expected: %d }", got, expected);
+	expected = 2;
+	is(got, expected, "1 == 2", "{ got: %d, expected: %d }", got, expected);
 	isnt(1, 1, "1 != 1");
 	isnt(1, 2, "1 != 2");
 
 	str_eq("foo", "foo", "'foo' == 'foo'");
 	str_eq("foo", "bar", "'foo' == 'bar'");
+
+	ok(0, "test yaml diagnostic", "[aa, bb, {a: [1, 2], b: {c: 'foo'}}, cc]");
 
 	return 0;
 }
