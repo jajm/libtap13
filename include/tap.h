@@ -218,6 +218,10 @@
 
 /* Do not directly use the functions below */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void tap_plan(unsigned int number_of_tests);
 void tap_skip_all(const char *reason);
 void tap_done_testing(void);
@@ -229,6 +233,10 @@ void tap_todo_end(void);
 void tap_skip(unsigned int number_of_tests, const char *reason);
 void tap_bail_out(const char *reason);
 void tap_diag(const char *diagnostic, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ! libtap13_tap_h_included */
 
