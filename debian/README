@@ -1,0 +1,6 @@
+The Debian Package libtap13
+----------------------------
+
+libtap13 is a C library to produce TAP13 output.
+
+ -- Julian Maurice <jajm@jajm.org>  Tue, 29 Oct 2013 19:29:50 +0100
