@@ -1,3 +1,7 @@
+2013-03-28  Julian Maurice  <jajm@jajm.org>
+
+	* libtap13: Remove debian/ files
+
 2013-10-29  Julian Maurice  <jajm@jajm.org>
 
 	* libtap13: First release of libtap13 (1.0)
