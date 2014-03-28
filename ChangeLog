@@ -1,5 +1,9 @@
 2014-03-28  Julian Maurice  <jajm@jajm.org>
 
+	* libtap13: Bump version 1.0.1
+
+2014-03-28  Julian Maurice  <jajm@jajm.org>
+
 	* configure.ac: Use LT_* and PKG_* macros
 	* bootstrap.sh: Added file
 	* src/Makefile.in: Use @YAML_LIBS@ and @YAML_CFLAGS@

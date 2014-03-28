@@ -1,7 +1,7 @@
 AC_PREREQ([2.69])
 LT_PREREQ([2.4.2])
 
-AC_INIT([libtap13], [1.0.0], [jajm@jajm.org])
+AC_INIT([libtap13], [1.0.1], [jajm@jajm.org])
 LT_INIT()
 
 AC_SUBST(LIBTOOL_CURRENT, 0)
