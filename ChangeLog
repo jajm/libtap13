@@ -1,5 +1,9 @@
 2014-04-23  Julian Maurice  <jajm@jajm.org>
 
+	* libtap13: Bump version 1.0.2
+
+2014-04-23  Julian Maurice  <jajm@jajm.org>
+
 	* src/tap.c: Fix a printf conversion specification
 
 2014-03-28  Julian Maurice  <jajm@jajm.org>
