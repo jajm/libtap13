@@ -1,3 +1,7 @@
+2014-04-23  Julian Maurice  <jajm@jajm.org>
+
+	* src/tap.c: Fix a printf conversion specification
+
 2014-03-28  Julian Maurice  <jajm@jajm.org>
 
 	* configure.ac: Use LT_* and PKG_* macros

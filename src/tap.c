@@ -173,7 +173,7 @@ void tap_yaml_write(const char *yaml, va_list vl)
 		yaml_emitter_delete(&emitter);
 		yaml_document_delete(&document);
 	} else {
-		fprintf(stderr, "Error: %s %s at offset %lu\n",
+		fprintf(stderr, "Error: %s %s at offset %zu\n",
 			parser.problem, parser.context,
 			parser.problem_mark.index);
 	}
