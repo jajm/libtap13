@@ -69,7 +69,7 @@
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
-#define ok(...) tap_ok(__VA_ARGS__, NULL, NULL)
+#define ok(...) tap_ok(__FILE__, __func__, __LINE__, __VA_ARGS__, NULL, NULL)
 
 /* Add a failing test.
  *
@@ -226,7 +226,8 @@ void tap_plan(unsigned int number_of_tests);
 void tap_skip_all(const char *reason);
 void tap_done_testing(void);
 
-void tap_ok(int ok, const char *description, const char *yaml, ...);
+void tap_ok(const char *file, const char *func, int line, int ok,
+	const char *description, const char *yaml, ...);
 
 int tap_todo_start(const char *explanation);
 void tap_todo_end(void);

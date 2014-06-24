@@ -179,7 +179,8 @@ void tap_yaml_write(const char *yaml, va_list vl)
 	}
 }
 
-void tap_ok(int ok, const char *description, const char *yaml, ...)
+void tap_ok(const char *file, const char *func, int line, int ok,
+	const char *description, const char *yaml, ...)
 {
 	current_test += 1;
 
@@ -187,8 +188,15 @@ void tap_ok(int ok, const char *description, const char *yaml, ...)
 		tap_print_version();
 	}
 
-	printf("%s %d %s", ok ? "ok" : "not ok", current_test,
-		(description != NULL) ? description : "");
+	printf("%s %d", ok ? "ok" : "not ok", current_test);
+
+	if (description != NULL) {
+		printf(" %s", description);
+	}
+
+	if (!ok) {
+		printf(" in %s (%s:%d)", func, file, line);
+	}
 
 	if (in_todo) {
 		printf(" # TODO %s",
