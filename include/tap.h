@@ -131,19 +131,34 @@
 
 /* Compare two strings with strcmp().
  *
- * void str_eq(got, expected);
- * void str_eq(got, expected, description, ...);
- * void str_eq(got, expected, description, ..., yaml_diagnostic, ...);
+ * void str_eq(got, cmp_str);
+ * void str_eq(got, cmp_str, description, ...);
+ * void str_eq(got, cmp_str, description, ..., yaml_diagnostic, ...);
+ *
+ * void str_ne(got, cmp_str);
+ * void str_ne(got, cmp_str, description, ...);
+ * void str_ne(got, cmp_str, description, ..., yaml_diagnostic, ...);
+ *
+ * void str_gt(got, cmp_str);
+ * void str_gt(got, cmp_str, description, ...);
+ * void str_gt(got, cmp_str, description, ..., yaml_diagnostic, ...);
+ *
+ * void str_lt(got, cmp_str);
+ * void str_lt(got, cmp_str, description, ...);
+ * void str_lt(got, cmp_str, description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   got            : String to test.
- *   expected       : Comparison string.
+ *   cmp_str        : Comparison string.
  *   description    : Description of test.
  *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
-#define str_eq(got, expected, ...) ok(0 == strcmp(got, expected), ##__VA_ARGS__)
+#define str_eq(got, cmp_str, ...) ok(0 == strcmp(got, cmp_str), ##__VA_ARGS__)
+#define str_ne(got, cmp_str, ...) ok(0 != strcmp(got, cmp_str), ##__VA_ARGS__)
+#define str_gt(got, cmp_str, ...) ok(0 < strcmp(got, cmp_str), ##__VA_ARGS__)
+#define str_lt(got, cmp_str, ...) ok(0 > strcmp(got, cmp_str), ##__VA_ARGS__)
 
 /* Define a 'todo' block.
  *

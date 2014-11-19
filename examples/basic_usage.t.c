@@ -37,6 +37,15 @@ int main()
 	str_eq("foo", "foo", "'foo' == 'foo'");
 	str_eq("foo", "bar", "'foo' == 'bar'");
 
+	str_ne("foo", "foo", "'foo' != 'foo'");
+	str_ne("foo", "bar", "'foo' != 'bar'");
+
+	str_gt("abc", "xyz", "'abc' > 'xyz'");
+	str_gt("xyz", "abc", "'xyz' > 'abc'");
+
+	str_lt("abc", "xyz", "'abc' < 'xyz'");
+	str_lt("xyz", "abc", "'xyz' < 'abc'");
+
 	ok(0, "test yaml diagnostic", "[aa, bb, {a: [1, 2], b: {c: 'foo'}}, cc]");
 
 	ok(1, "test description with arguments: %d %s %p", 1, "=", 1);
