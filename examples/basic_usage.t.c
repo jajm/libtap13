@@ -39,5 +39,8 @@ int main()
 
 	ok(0, "test yaml diagnostic", "[aa, bb, {a: [1, 2], b: {c: 'foo'}}, cc]");
 
+	ok(1, "test description with arguments: %d %s %p", 1, "=", 1);
+	ok(0, "test description with arguments: %d %s %p", 1, "=", 1, "{yaml: %d}", 1);
+
 	return 0;
 }

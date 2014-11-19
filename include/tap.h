@@ -59,13 +59,14 @@
 /* Run a test.
  *
  * void ok(test);
- * void ok(test, description);
- * void ok(test, description, yaml_diagnostic, ...);
+ * void ok(test, description, ...);
+ * void ok(test, description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   test           : An expression that should evaluate to 0 if test failed, or
  *                    any other value if test succeeded.
  *   description    : Description of test.
+ *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
@@ -74,11 +75,12 @@
 /* Add a failing test.
  *
  * void fail();
- * void fail(description);
- * void fail(description, yaml_diagnostic, ...);
+ * void fail(description, ...);
+ * void fail(description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   description    : Description of test.
+ *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
@@ -87,23 +89,25 @@
 /* Add a passing test.
  *
  * void pass();
- * void pass(description);
+ * void pass(description, ...);
  *
  * Parameters:
  *   description: Description of test.
+ *                Can contain printf conversion specifications.
  */
 #define pass(...) ok(1, ##__VA_ARGS__)
 
 /* Compare two values with '==' operator.
  *
  * void is(got, expected);
- * void is(got, expected, description);
- * void is(got, expected, description, yaml_diagnostic, ...);
+ * void is(got, expected, description, ...);
+ * void is(got, expected, description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   got            : Value to test.
  *   expected       : Comparison value.
  *   description    : Description of test.
+ *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
@@ -112,13 +116,14 @@
 /* Compare two values with '!=' operator.
  *
  * void isnt(got, expected);
- * void isnt(got, expected, description);
- * void isnt(got, expected, description, yaml_diagnostic, ...);
+ * void isnt(got, expected, description, ...);
+ * void isnt(got, expected, description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   got            : Value to test.
  *   expected       : Comparison value.
  *   description    : Description of test.
+ *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
@@ -127,13 +132,14 @@
 /* Compare two strings with strcmp().
  *
  * void str_eq(got, expected);
- * void str_eq(got, expected, description);
- * void str_eq(got, expected, description, yaml_diagnostic, ...);
+ * void str_eq(got, expected, description, ...);
+ * void str_eq(got, expected, description, ..., yaml_diagnostic, ...);
  *
  * Parameters
  *   got            : String to test.
  *   expected       : Comparison string.
  *   description    : Description of test.
+ *                    Can contain printf conversion specifications.
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
@@ -227,7 +233,7 @@ void tap_skip_all(const char *reason);
 void tap_done_testing(void);
 
 void tap_ok(const char *file, const char *func, int line, int ok,
-	const char *description, const char *yaml, ...);
+	const char *description, ...);
 
 int tap_todo_start(const char *explanation);
 void tap_todo_end(void);

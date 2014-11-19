@@ -148,6 +148,10 @@ void tap_yaml_write(const char *yaml, va_list vl)
 	char buffer[8192];
 	size_t length;
 
+	if (yaml == NULL) {
+		return;
+	}
+
 	length = vsnprintf(buffer, 8192, yaml, vl);
 
 	yaml_parser_initialize(&parser);
@@ -180,8 +184,11 @@ void tap_yaml_write(const char *yaml, va_list vl)
 }
 
 void tap_ok(const char *file, const char *func, int line, int ok,
-	const char *description, const char *yaml, ...)
+	const char *description, ...)
 {
+	va_list vl;
+	char buffer[8192];
+
 	current_test += 1;
 
 	if (!planned && current_test == 1) {
@@ -190,8 +197,10 @@ void tap_ok(const char *file, const char *func, int line, int ok,
 
 	printf("%s %d", ok ? "ok" : "not ok", current_test);
 
+	va_start(vl, description);
 	if (description != NULL) {
-		printf(" %s", description);
+		vsnprintf(buffer, 8192, description, vl);
+		printf(" %s", buffer);
 	}
 
 	if (!ok) {
@@ -205,12 +214,10 @@ void tap_ok(const char *file, const char *func, int line, int ok,
 
 	printf("\n");
 
-	if (!ok && yaml != NULL) {
-		va_list vl;
-		va_start(vl, yaml);
-		tap_yaml_write(yaml, vl);
-		va_end(vl);
+	if (!ok) {
+		tap_yaml_write(va_arg(vl, const char *), vl);
 	}
+	va_end(vl);
 }
 
 int tap_todo_start(const char *explanation)
