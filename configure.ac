@@ -18,6 +18,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	include/Makefile
 	examples/Makefile
+	t/Makefile
 	libtap13.pc
 	config.mk
 ])

@@ -24,19 +24,63 @@
 
 #include <yaml.h>
 
-static int planned = 0;
-static unsigned int current_test = 0;
-static int in_todo = 0;
-static const char *todo_explanation = NULL;
+typedef struct {
+	FILE *out;
+	int plan_printed;
+	unsigned int current_test;
+	int in_todo;
+	const char *todo_explanation;
+} tap_context_t;
+
+static tap_context_t ctx = {
+	.out = NULL,
+	.plan_printed = 0,
+	.current_test = 0,
+	.in_todo = 0,
+	.todo_explanation = NULL
+};
+
+static int tap_printf(const char *format, ...)
+{
+	va_list va_ptr;
+	int n;
+
+	if (!ctx.out) ctx.out = stdout;
+
+	va_start(va_ptr, format);
+	n = vfprintf(ctx.out, format, va_ptr);
+	va_end(va_ptr);
+
+	return n;
+}
+
+static int tap_puts(const char *s)
+{
+	if (!ctx.out) ctx.out = stdout;
+
+	return fputs(s, ctx.out);
+}
+
+static int tap_putc(int c)
+{
+	if (!ctx.out) ctx.out = stdout;
+
+	return fputc(c, ctx.out);
+}
+
+void tap_set_stream(FILE *stream)
+{
+	ctx.out = stream;
+}
 
 void tap_print_version(void)
 {
-	printf("TAP version 13\n");
+	tap_puts("TAP version 13\n");
 }
 
 void tap_plan(unsigned int number_of_tests)
 {
-	if (planned) {
+	if (ctx.plan_printed) {
 		fprintf(stderr, "Tests already planned.\n");
 		return;
 	}
@@ -47,31 +91,40 @@ void tap_plan(unsigned int number_of_tests)
 	}
 
 	tap_print_version();
-	printf("1..%d\n", number_of_tests);
-	planned = 1;
+	tap_printf("1..%d\n", number_of_tests);
+	ctx.plan_printed = 1;
 }
 
 void tap_skip_all(const char *reason)
 {
-	if (planned) {
+	if (ctx.plan_printed) {
 		fprintf(stderr, "Tests already planned.\n");
 		return;
 	}
 
 	tap_print_version();
-	printf("1..0 # SKIP %s\n", (reason != NULL) ? reason : "");
-	planned = 1;
+	tap_printf("1..0 # SKIP %s\n", (reason != NULL) ? reason : "");
+	ctx.plan_printed = 1;
 }
 
 void tap_done_testing(void)
 {
-	if (planned) {
+	if (ctx.plan_printed) {
 		fprintf(stderr, "Tests already planned.\n");
 		return;
 	}
 
-	printf("1..%d\n", current_test);
-	planned = 1;
+	tap_printf("1..%d\n", ctx.current_test);
+	ctx.plan_printed = 1;
+}
+
+void tap_reset(void)
+{
+	ctx.out = stdout;
+	ctx.plan_printed = 0;
+	ctx.current_test = 0;
+	ctx.in_todo = 0;
+	ctx.todo_explanation = NULL;
 }
 
 // We write our own handler, so we can print the initial indent of 2 spaces.
@@ -84,13 +137,22 @@ int tap_yaml_write_handler(void *data, unsigned char *buffer, size_t size)
 	if (data) {}
 
 	while (*bptr != '\0' && i < size) {
+		tap_putc(*bptr);
 		if (*bptr == '\n') {
-			fputc('\n', stdout);
-			if (*(bptr+1) != '\0') {
-				fputs("  ", stdout);
+			/* If we find a NULL character, 0 or more spaces after a
+			 * newline character, stop writing,
+			 * else write the indent. */
+
+			int j = 1;
+			while (*(bptr+j) == ' ') {
+				j++;
 			}
-		} else {
-			fputc(*bptr, stdout);
+
+			if (*(bptr+j) == '\0') {
+				break;
+			}
+
+			tap_puts("  ");
 		}
 		bptr++;
 		i++;
@@ -167,7 +229,7 @@ void tap_yaml_write(const char *yaml, va_list vl)
 		yaml_emitter_set_indent(&emitter, 2);
 
 		// Initial indent
-		fputs("  ", stdout);
+		tap_puts("  ");
 
 		yaml_emitter_open(&emitter);
 		yaml_emitter_dump(&emitter, &document);
@@ -189,30 +251,30 @@ void tap_ok(const char *file, const char *func, int line, int ok,
 	va_list vl;
 	char buffer[8192];
 
-	current_test += 1;
+	ctx.current_test += 1;
 
-	if (!planned && current_test == 1) {
+	if (!ctx.plan_printed && ctx.current_test == 1) {
 		tap_print_version();
 	}
 
-	printf("%s %d", ok ? "ok" : "not ok", current_test);
+	tap_printf("%s %d", ok ? "ok" : "not ok", ctx.current_test);
 
 	va_start(vl, description);
 	if (description != NULL) {
 		vsnprintf(buffer, 8192, description, vl);
-		printf(" %s", buffer);
+		tap_printf(" %s", buffer);
 	}
 
 	if (!ok) {
-		printf(" in %s (%s:%d)", func, file, line);
+		tap_printf(" in %s (%s:%d)", func, file, line);
 	}
 
-	if (in_todo) {
-		printf(" # TODO %s",
-			(todo_explanation != NULL) ? todo_explanation : "");
+	if (ctx.in_todo) {
+		tap_printf(" # TODO %s",
+			(ctx.todo_explanation != NULL) ? ctx.todo_explanation : "");
 	}
 
-	printf("\n");
+	tap_puts("\n");
 
 	if (!ok) {
 		tap_yaml_write(va_arg(vl, const char *), vl);
@@ -222,49 +284,49 @@ void tap_ok(const char *file, const char *func, int line, int ok,
 
 int tap_todo_start(const char *explanation)
 {
-	in_todo = 1;
-	todo_explanation = explanation;
+	ctx.in_todo = 1;
+	ctx.todo_explanation = explanation;
 
 	return 0;
 }
 
 void tap_todo_end(void)
 {
-	in_todo = 0;
-	todo_explanation = NULL;
+	ctx.in_todo = 0;
+	ctx.todo_explanation = NULL;
 }
 
 void tap_skip(unsigned int number_of_tests, const char *reason)
 {
 	unsigned int i;
 
-	if (!planned && current_test == 1) {
+	if (!ctx.plan_printed && ctx.current_test == 1) {
 		tap_print_version();
 	}
 
 	for (i = 0; i < number_of_tests; i++) {
-		current_test += 1;
-		printf("ok %d # SKIP %s\n", current_test,
+		ctx.current_test += 1;
+		tap_printf("ok %d # SKIP %s\n", ctx.current_test,
 			(reason != NULL) ? reason : "");
 	}
 }
 
 void tap_bail_out(const char *reason)
 {
-	if (!planned && current_test == 1) {
+	if (!ctx.plan_printed && ctx.current_test == 1) {
 		tap_print_version();
 	}
 
-	printf("Bail out! %s\n", (reason != NULL) ? reason : "");
+	tap_printf("Bail out! %s\n", (reason != NULL) ? reason : "");
 }
 
 void tap_diag(const char *diagnostic, ...)
 {
 	va_list vl;
 
-	printf("# ");
+	tap_puts("# ");
 	va_start(vl, diagnostic);
 	vprintf(diagnostic, vl);
 	va_end(vl);
-	printf("\n");
+	tap_putc('\n');
 }

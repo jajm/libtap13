@@ -4,7 +4,7 @@ PKGCONFIG_FILES := $(wildcard *.pc)
 
 .PHONY: lib examples install clean
 
-all: lib examples
+all: lib examples test
 
 lib:
 	$(MAKE) -C src
@@ -24,6 +24,10 @@ install:
 		$${CMD}; \
 	fi
 
+test:
+	$(MAKE) -C t
+
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C examples clean
+	$(MAKE) -C t clean

@@ -26,7 +26,9 @@
 #define libtap13_tap_h_included
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include "tap_pp_utils.h"
 
 /* Declare a test plan.
  *
@@ -84,7 +86,9 @@
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
-#define fail(...) ok(0, ##__VA_ARGS__)
+#define fail(...) TAP_CAT(TAP_FAIL, TAP_ISEMPTY(__VA_ARGS__)) (__VA_ARGS__)
+#define TAP_FAIL0(...) ok(0, __VA_ARGS__)
+#define TAP_FAIL1(...) ok(0)
 
 /* Add a passing test.
  *
@@ -95,7 +99,9 @@
  *   description: Description of test.
  *                Can contain printf conversion specifications.
  */
-#define pass(...) ok(1, ##__VA_ARGS__)
+#define pass(...) TAP_CAT(TAP_PASS, TAP_ISEMPTY(__VA_ARGS__)) (__VA_ARGS__)
+#define TAP_PASS0(...) ok(1, __VA_ARGS__)
+#define TAP_PASS1(...) ok(1)
 
 /* Compare two values with '==' operator.
  *
@@ -111,7 +117,7 @@
  *   yaml_diagnostic: A string in YAML format that is printed if test failed.
  *                    Can contain printf conversion specifications.
  */
-#define is(got, expected, ...) ok(got == expected,  ##__VA_ARGS__)
+#define is(got, expected, ...) ok(got == expected, ##__VA_ARGS__)
 
 /* Compare two values with '!=' operator.
  *
@@ -243,9 +249,11 @@
 extern "C" {
 #endif
 
+void tap_set_stream(FILE *stream);
 void tap_plan(unsigned int number_of_tests);
 void tap_skip_all(const char *reason);
 void tap_done_testing(void);
+void tap_reset(void);
 
 void tap_ok(const char *file, const char *func, int line, int ok,
 	const char *description, ...);
