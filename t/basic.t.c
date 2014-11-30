@@ -25,6 +25,30 @@ void test_plan(void)
 
 	pass();
 	pass("explicit pass");
+
+	is(0, 1);
+	is(0, 1, "is 0 == 1 ?");
+	is(0, 1, "is %d == %d ?", 0, 1);
+	is(0, 1, "is 0 == 1 ?", "[1]");
+	is(0, 1, "is %d == %d ?", 0, 1, "[%d]", 1);
+
+	is(1, 1);
+	is(1, 1, "is 1 == 1 ?");
+	is(1, 1, "is %d == %d ?", 1, 1);
+	is(1, 1, "is 1 == 1 ?", "[1]");
+	is(1, 1, "is %d == %d ?", 1, 1, "[%d]", 1);
+
+	isnt(0, 1);
+	isnt(0, 1, "is 0 != 1 ?");
+	isnt(0, 1, "is %d != %d ?", 0, 1);
+	isnt(0, 1, "is 0 != 1 ?", "[1]");
+	isnt(0, 1, "is %d != %d ?", 0, 1, "[%d]", 1);
+
+	isnt(1, 1);
+	isnt(1, 1, "is 1 != 1 ?");
+	isnt(1, 1, "is %d != %d ?", 1, 1);
+	isnt(1, 1, "is 1 != 1 ?", "[1]");
+	isnt(1, 1, "is %d != %d ?", 1, 1, "[%d]", 1);
 }
 
 int main()
@@ -58,6 +82,38 @@ int main()
 		"  ...",
 		"ok 14",
 		"ok 15 explicit pass",
+		"not ok 16 in test_plan (basic.t.c:29)",
+		"not ok 17 is 0 == 1 ? in test_plan (basic.t.c:30)",
+		"not ok 18 is 0 == 1 ? in test_plan (basic.t.c:31)",
+		"not ok 19 is 0 == 1 ? in test_plan (basic.t.c:32)",
+		"  ---",
+		"  - 1",
+		"  ...",
+		"not ok 20 is 0 == 1 ? in test_plan (basic.t.c:33)",
+		"  ---",
+		"  - 1",
+		"  ...",
+		"ok 21",
+		"ok 22 is 1 == 1 ?",
+		"ok 23 is 1 == 1 ?",
+		"ok 24 is 1 == 1 ?",
+		"ok 25 is 1 == 1 ?",
+		"ok 26",
+		"ok 27 is 0 != 1 ?",
+		"ok 28 is 0 != 1 ?",
+		"ok 29 is 0 != 1 ?",
+		"ok 30 is 0 != 1 ?",
+		"not ok 31 in test_plan (basic.t.c:47)",
+		"not ok 32 is 1 != 1 ? in test_plan (basic.t.c:48)",
+		"not ok 33 is 1 != 1 ? in test_plan (basic.t.c:49)",
+		"not ok 34 is 1 != 1 ? in test_plan (basic.t.c:50)",
+		"  ---",
+		"  - 1",
+		"  ...",
+		"not ok 35 is 1 != 1 ? in test_plan (basic.t.c:51)",
+		"  ---",
+		"  - 1",
+		"  ...",
 	};
 
 	return run(test_plan, expected);
