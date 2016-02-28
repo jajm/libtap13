@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 2.8.2)
-project (libtap13)
+cmake_minimum_required (VERSION 3.0.2)
+project (libtap13 VERSION 1.1.0)
 
 find_package (PkgConfig)
 pkg_check_modules (YAML REQUIRED yaml-0.1)
