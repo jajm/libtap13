@@ -1,5 +1,5 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-includedir=${prefix}/include
+includedir=${prefix}/include/@PROJECT_NAME@
 libdir=${prefix}/lib
 
 Name: @PROJECT_NAME@
