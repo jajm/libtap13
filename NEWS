@@ -1,1 +1,13 @@
+libtap13 (UNRELEASED)
 
+  * Switch build system from autotools to CMake
+  * Add unit tests
+  * Add functions str_ne, str_gt and str_lt
+  * Allow description parameter to have printf conversion specifications
+  * Print location of failed tests
+  * Fix a printf conversion specification
+  * Remove debian files from source
+
+libtap13 (1.0) - 2013-10-29
+
+  * First release
