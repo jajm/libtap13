@@ -2,7 +2,7 @@
 
 int main()
 {
-	plan(19);
+	plan(27);
 
 	ok(0);
 	ok(0, "should fail");
